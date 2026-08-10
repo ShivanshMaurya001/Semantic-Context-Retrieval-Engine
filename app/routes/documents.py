@@ -2,12 +2,18 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from pathlib import Path
 import uuid
 
+from app.database.database import SessionLocal
+from app.database.models import Document
+
 
 router = APIRouter()
 
 
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
+
+
+MAX_FILE_SIZE = 10 * 1024 * 1024
 
 
 @router.post("/upload")
@@ -22,23 +28,54 @@ def upload_pdf(file: UploadFile = File(...)):
             detail="Only PDF files are allowed"
         )
 
-    # Generate unique ID of pdf file jo upload hua ha 
+    # Read file
+    file_content = file.file.read()
+
+    # Check file size
+    if len(file_content) > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=400,
+            detail="File size must be less than or equal to 10 MB"
+        )
+
+    # Generate unique file ID
     file_id = uuid.uuid4()
 
-    # Create unique filename of file 
+    # Create unique filename
     unique_filename = f"{file_id}.pdf"
 
-    # Create file path and yahan pe file ko save karenge uploads folder me or
-    #  upload route me file ko save karenge uploads folder me
+    # Create file path
     file_path = UPLOAD_DIR / unique_filename
 
-    # Save PDF to the uploads directory so ham use access kar paye or usko read kar sake 
+    # Save PDF
     with open(file_path, "wb") as buffer:
-        buffer.write(file.file.read())
+        buffer.write(file_content)
 
-    return {  # normal response ha file hone ke baad uske barre me
-        "file_id": str(file_id),
-        "original_filename": file.filename,
-        "saved_filename": unique_filename,
-        "file_path": str(file_path)
-    }
+    # Create database session
+    db = SessionLocal()
+
+    try:
+        # Create Document object
+        document = Document(
+            file_id=str(file_id),
+            filename=file.filename,
+            page_count=0,
+            status="processing"
+        )
+
+        # Add object to database session
+        db.add(document)
+
+        # Save changes to database
+        db.commit()
+
+        # Return response
+        return {
+            "file_id": str(file_id),
+            "filename": file.filename,
+            "status": "processing"
+        }
+
+    finally:
+        # Close database session
+        db.close()
