@@ -20,6 +20,9 @@ def upload_pdf(file: UploadFile = File(...)):
 
     file_path = UPLOAD_DIR / unique_filename
 
+    with open(file_path, "wb") as buffer:
+        buffer.write(file.file.read())
+
     return {
         "file_id": str(file_id),
         "original_filename": file.filename,
