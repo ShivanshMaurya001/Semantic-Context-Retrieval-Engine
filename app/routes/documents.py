@@ -4,14 +4,12 @@ import uuid
 
 from app.database.database import SessionLocal
 from app.database.models import Document
-
+from app.services.pdf_service import extract_text_from_pdf
 
 router = APIRouter()
 
-
 UPLOAD_DIR = Path("uploads")
 UPLOAD_DIR.mkdir(exist_ok=True)
-
 
 MAX_FILE_SIZE = 10 * 1024 * 1024
 
@@ -62,6 +60,15 @@ def upload_pdf(file: UploadFile = File(...)):
             page_count=0,
             status="processing"
         )
+
+        # Extract text from PDF
+        pages = extract_text_from_pdf(file_path)
+
+        # Update page count
+        document.page_count = len(pages)
+
+        # Mark document as ready
+        document.status = "ready"
 
         # Add object to database session
         db.add(document)
