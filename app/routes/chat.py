@@ -13,14 +13,12 @@ router = APIRouter()
 @router.post("/query")
 def query_documents(request: QueryRequest):
 
-    # Check if the question is empty
     if not request.question.strip():
         raise HTTPException(
             status_code=400,
             detail="Question cannot be empty"
         )
 
-    # Check if the requested document exists
     if request.file_id:
 
         db = SessionLocal()
@@ -39,22 +37,18 @@ def query_documents(request: QueryRequest):
         finally:
             db.close()
 
-    # Retrieve relevant chunks from ChromaDB
     results = search_chunks(
         question=request.question,
         file_id=request.file_id
     )
 
-    # Get retrieved documents
     documents = results["documents"][0]
 
-    # Combine chunks into one context for the LLM
     context = "\n\n".join(
         f"[Chunk {i + 1}]\n{document}"
         for i, document in enumerate(documents)
     )
 
-    # Generate grounded answer using Gemini
     answer = generate_answer(
         question=request.question,
         context=context

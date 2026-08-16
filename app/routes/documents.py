@@ -51,7 +51,6 @@ def upload_pdf(file: UploadFile = File(...)):
 
     try:
 
-        # Create document record with processing status
         document = Document(
             file_id=str(file_id),
             filename=file.filename,
@@ -59,11 +58,9 @@ def upload_pdf(file: UploadFile = File(...)):
             status="processing"
         )
 
-        # Save processing status before starting extraction
         db.add(document)
         db.commit()
 
-        # Extract text from PDF
         try:
             pages = extract_text_from_pdf(file_path)
 
@@ -77,10 +74,8 @@ def upload_pdf(file: UploadFile = File(...)):
                 detail=str(e)
             )
 
-        # Store page count
         document.page_count = len(pages)
 
-        # Create chunks
         chunks = create_page_chunks(
             pages,
             str(file_id)
@@ -88,10 +83,8 @@ def upload_pdf(file: UploadFile = File(...)):
 
         print("Total chunks created:", len(chunks))
 
-        # Store chunks and embeddings in ChromaDB
         store_chunks(chunks)
 
-        # Mark document as ready
         document.status = "ready"
 
         db.commit()
@@ -103,11 +96,9 @@ def upload_pdf(file: UploadFile = File(...)):
         }
 
     except HTTPException:
-        # Keep intentionally raised HTTP errors unchanged
         raise
 
     except Exception:
-        # Handle unexpected processing errors
         document.status = "failed"
         db.commit()
 
@@ -118,7 +109,6 @@ def upload_pdf(file: UploadFile = File(...)):
 
     finally:
 
-        # Close database session
         db.close()
 
 
