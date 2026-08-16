@@ -6,3 +6,4 @@ sqlalchemy
 pdfplumber
 chromadb
 python-multipart
+google-genai
