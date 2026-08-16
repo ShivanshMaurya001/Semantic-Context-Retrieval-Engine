@@ -21,4 +21,3 @@ if __name__ == "__main__":
     print("Vector Length:", len(embedding))
     print("First 5 Values:", embedding[:5])
 
-print("Gemini client created successfully!")
