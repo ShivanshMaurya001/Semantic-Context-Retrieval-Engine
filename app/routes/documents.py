@@ -117,3 +117,5 @@ def upload_pdf(file: UploadFile = File(...)):
 
         # Close database session
         db.close()
+
+
