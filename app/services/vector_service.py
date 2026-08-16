@@ -3,19 +3,16 @@ import chromadb
 from app.services.embedding_service import generate_embedding
 
 
-# Connect to persistent ChromaDB
 client = chromadb.PersistentClient(
     path="./chroma_db"
 )
 
 
-# Create or connect to collection
 collection = client.get_or_create_collection(
     name="document_chunks"
 )
 
 
-# Store one chunk in ChromaDB
 def store_chunk(chunk):
 
     embedding = generate_embedding(
@@ -42,14 +39,10 @@ def store_chunks(chunks):
         store_chunk(chunk)
 
 
-
-# Search relevant chunks from ChromaDB
 def search_chunks(question, top_k=3, file_id=None):
 
-    # Convert the user's question into an embedding
     question_embedding = generate_embedding(question)
 
-    # Search ChromaDB for similar chunks
     if file_id:
 
         results = collection.query(

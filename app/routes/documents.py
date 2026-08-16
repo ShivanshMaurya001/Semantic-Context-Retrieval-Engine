@@ -30,9 +30,7 @@ def upload_pdf(file: UploadFile = File(...)):
             detail="Only PDF files are allowed"
         )
 
-
     file_content = file.file.read()
-
 
     if len(file_content) > MAX_FILE_SIZE:
         raise HTTPException(
@@ -42,21 +40,18 @@ def upload_pdf(file: UploadFile = File(...)):
 
     file_id = uuid.uuid4()
 
-
     unique_filename = f"{file_id}.pdf"
-
 
     file_path = UPLOAD_DIR / unique_filename
 
     with open(file_path, "wb") as buffer:
         buffer.write(file_content)
 
-
     db = SessionLocal()
-
 
     try:
 
+        # Create document record with processing status
         document = Document(
             file_id=str(file_id),
             filename=file.filename,
@@ -64,32 +59,42 @@ def upload_pdf(file: UploadFile = File(...)):
             status="processing"
         )
 
+        # Save processing status before starting extraction
+        db.add(document)
+        db.commit()
 
-        pages = extract_text_from_pdf(file_path)
+        # Extract text from PDF
+        try:
+            pages = extract_text_from_pdf(file_path)
 
+        except ValueError as e:
 
+            document.status = "failed"
+            db.commit()
+
+            raise HTTPException(
+                status_code=400,
+                detail=str(e)
+            )
+
+        # Store page count
         document.page_count = len(pages)
 
-
+        # Create chunks
         chunks = create_page_chunks(
             pages,
             str(file_id)
         )
 
-
         print("Total chunks created:", len(chunks))
 
+        # Store chunks and embeddings in ChromaDB
         store_chunks(chunks)
 
-
+        # Mark document as ready
         document.status = "ready"
 
-
-        db.add(document)
-
-
         db.commit()
-
 
         return {
             "file_id": str(file_id),
@@ -97,8 +102,43 @@ def upload_pdf(file: UploadFile = File(...)):
             "status": "ready"
         }
 
+    except HTTPException:
+        # Keep intentionally raised HTTP errors unchanged
+        raise
+
+    except Exception:
+        # Handle unexpected processing errors
+        document.status = "failed"
+        db.commit()
+
+        raise HTTPException(
+            status_code=500,
+            detail="Document processing failed"
+        )
 
     finally:
 
         # Close database session
+        db.close()
+
+
+@router.get("/documents")
+def get_documents():
+
+    db = SessionLocal()
+
+    try:
+        documents = db.query(Document).all()
+
+        return [
+            {
+                "file_id": document.file_id,
+                "filename": document.filename,
+                "page_count": document.page_count,
+                "status": document.status
+            }
+            for document in documents
+        ]
+
+    finally:
         db.close()
