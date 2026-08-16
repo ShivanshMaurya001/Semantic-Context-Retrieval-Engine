@@ -41,4 +41,28 @@ def store_chunks(chunks):
     for chunk in chunks:
         store_chunk(chunk)
 
-    
+
+
+# Search relevant chunks from ChromaDB
+def search_chunks(question, top_k=3, file_id=None):
+
+    # Convert the user's question into an embedding
+    question_embedding = generate_embedding(question)
+
+    # Search ChromaDB for similar chunks
+    if file_id:
+
+        results = collection.query(
+            query_embeddings=[question_embedding],
+            n_results=top_k,
+            where={"file_id": file_id}
+        )
+
+    else:
+
+        results = collection.query(
+            query_embeddings=[question_embedding],
+            n_results=top_k
+        )
+
+    return results

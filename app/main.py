@@ -3,10 +3,14 @@ from fastapi import FastAPI
 from app.database.database import engine, Base
 from app.database import models
 from app.routes.documents import router
+from app.routes.chat import router as chat_router
 
 
 Base.metadata.create_all(bind=engine)
 
+
 app = FastAPI()
 
+
 app.include_router(router)
+app.include_router(chat_router)
