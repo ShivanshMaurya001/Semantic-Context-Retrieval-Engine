@@ -1,3 +1,5 @@
+import time
+
 from fastapi import APIRouter, HTTPException
 
 from app.schemas.schemas import QueryRequest
@@ -12,6 +14,8 @@ router = APIRouter()
 
 @router.post("/query")
 def query_documents(request: QueryRequest):
+
+    start_time = time.time()
 
     if not request.question.strip():
         raise HTTPException(
@@ -69,7 +73,11 @@ def query_documents(request: QueryRequest):
             }
         )
 
+    end_time = time.time()
+    latency_sec = round(end_time - start_time, 2)
+
     return {
         "answer": answer,
-        "sources": sources
+        "sources": sources,
+        "latency_sec": latency_sec
     }

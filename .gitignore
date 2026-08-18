@@ -5,3 +5,4 @@ __pycache__/
 app.db
 chroma_db/
 uploads/
+
