@@ -1,0 +1,99 @@
+<svg viewBox="0 0 1000 560" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#6b6b6b"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1000" height="560" fill="#0f1117"/>
+
+  <!-- Title -->
+  <text x="500" y="34" text-anchor="middle" fill="#f5f5f5" font-size="20" font-weight="bold">Semantic Context Retrieval Engine — Architecture</text>
+
+  <!-- Streamlit UI -->
+  <rect x="40" y="70" width="200" height="60" rx="8" fill="#1c1f2b" stroke="#8b5cf6" stroke-width="1.5"/>
+  <text x="140" y="94" text-anchor="middle" fill="#e5e5e5" font-size="14" font-weight="bold">Streamlit UI</text>
+  <text x="140" y="112" text-anchor="middle" fill="#9ca3af" font-size="11">Upload / Ask / View Sources</text>
+
+  <!-- FastAPI backend -->
+  <rect x="40" y="170" width="200" height="60" rx="8" fill="#1c1f2b" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="140" y="194" text-anchor="middle" fill="#e5e5e5" font-size="14" font-weight="bold">FastAPI Backend</text>
+  <text x="140" y="212" text-anchor="middle" fill="#9ca3af" font-size="11">/upload · /query · /documents</text>
+
+  <line x1="140" y1="130" x2="140" y2="170" stroke="#6b6b6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Ingestion path -->
+  <text x="330" y="65" fill="#a78bfa" font-size="13" font-weight="bold">Ingestion (Upload)</text>
+
+  <rect x="300" y="80" width="150" height="55" rx="8" fill="#1c1f2b" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="375" y="103" text-anchor="middle" fill="#e5e5e5" font-size="12" font-weight="bold">PDF Upload</text>
+  <text x="375" y="119" text-anchor="middle" fill="#9ca3af" font-size="10">pdfplumber extraction</text>
+
+  <rect x="490" y="80" width="150" height="55" rx="8" fill="#1c1f2b" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="565" y="103" text-anchor="middle" fill="#e5e5e5" font-size="12" font-weight="bold">Chunking</text>
+  <text x="565" y="119" text-anchor="middle" fill="#9ca3af" font-size="10">500-char page chunks</text>
+
+  <rect x="680" y="80" width="150" height="55" rx="8" fill="#1c1f2b" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="755" y="103" text-anchor="middle" fill="#e5e5e5" font-size="12" font-weight="bold">Gemini Embeddings</text>
+  <text x="755" y="119" text-anchor="middle" fill="#9ca3af" font-size="10">vector generation</text>
+
+  <line x1="240" y1="108" x2="298" y2="108" stroke="#6b6b6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="450" y1="108" x2="488" y2="108" stroke="#6b6b6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="640" y1="108" x2="678" y2="108" stroke="#6b6b6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- ChromaDB (shared) -->
+  <rect x="680" y="185" width="150" height="60" rx="8" fill="#1c1f2b" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="755" y="209" text-anchor="middle" fill="#e5e5e5" font-size="13" font-weight="bold">ChromaDB</text>
+  <text x="755" y="226" text-anchor="middle" fill="#9ca3af" font-size="10">Vector Store</text>
+
+  <line x1="755" y1="135" x2="755" y2="183" stroke="#6b6b6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- SQLite (shared) -->
+  <rect x="490" y="185" width="150" height="60" rx="8" fill="#1c1f2b" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="565" y="209" text-anchor="middle" fill="#e5e5e5" font-size="13" font-weight="bold">SQLite</text>
+  <text x="565" y="226" text-anchor="middle" fill="#9ca3af" font-size="10">Document metadata</text>
+
+  <line x1="565" y1="135" x2="565" y2="183" stroke="#6b6b6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Query path -->
+  <text x="330" y="275" fill="#a78bfa" font-size="13" font-weight="bold">Query (Ask)</text>
+
+  <rect x="300" y="290" width="150" height="55" rx="8" fill="#1c1f2b" stroke="#ec4899" stroke-width="1.5"/>
+  <text x="375" y="313" text-anchor="middle" fill="#e5e5e5" font-size="12" font-weight="bold">Question</text>
+  <text x="375" y="329" text-anchor="middle" fill="#9ca3af" font-size="10">+ embedding</text>
+
+  <rect x="490" y="290" width="150" height="55" rx="8" fill="#1c1f2b" stroke="#ec4899" stroke-width="1.5"/>
+  <text x="565" y="313" text-anchor="middle" fill="#e5e5e5" font-size="12" font-weight="bold">Similarity Search</text>
+  <text x="565" y="329" text-anchor="middle" fill="#9ca3af" font-size="10">retrieve top chunks</text>
+
+  <rect x="680" y="290" width="150" height="55" rx="8" fill="#1c1f2b" stroke="#ec4899" stroke-width="1.5"/>
+  <text x="755" y="313" text-anchor="middle" fill="#e5e5e5" font-size="12" font-weight="bold">Context Assembly</text>
+  <text x="755" y="329" text-anchor="middle" fill="#9ca3af" font-size="10">relevant chunks</text>
+
+  <line x1="240" y1="318" x2="298" y2="318" stroke="#6b6b6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="450" y1="318" x2="488" y2="318" stroke="#6b6b6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="640" y1="318" x2="678" y2="318" stroke="#6b6b6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <line x1="755" y1="245" x2="565" y2="288" stroke="#6b6b6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="565" y1="245" x2="565" y2="288" stroke="#6b6b6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Gemini generation -->
+  <rect x="490" y="400" width="150" height="60" rx="8" fill="#1c1f2b" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="565" y="424" text-anchor="middle" fill="#e5e5e5" font-size="13" font-weight="bold">Gemini</text>
+  <text x="565" y="441" text-anchor="middle" fill="#9ca3af" font-size="10">grounded generation</text>
+
+  <line x1="755" y1="345" x2="600" y2="398" stroke="#6b6b6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Answer + sources -->
+  <rect x="300" y="400" width="150" height="60" rx="8" fill="#1c1f2b" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="375" y="424" text-anchor="middle" fill="#e5e5e5" font-size="12" font-weight="bold">Answer + Sources</text>
+  <text x="375" y="441" text-anchor="middle" fill="#9ca3af" font-size="10">file, page, chunk id</text>
+
+  <line x1="488" y1="430" x2="452" y2="430" stroke="#6b6b6b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <line x1="375" y1="400" x2="140" y2="235" stroke="#6b6b6b" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+  <text x="245" y="330" fill="#6b6b6b" font-size="10">response</text>
+
+  <!-- Legend -->
+  <text x="40" y="500" fill="#6b6b6b" font-size="11">Solid arrows: data flow — Dashed arrow: response returned to UI</text>
+</svg>
