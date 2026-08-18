@@ -7,3 +7,4 @@ pdfplumber
 chromadb
 python-multipart
 google-genai
+streamlit
